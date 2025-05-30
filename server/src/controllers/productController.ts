@@ -1,7 +1,6 @@
+import "../db/mongoose";
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import Product from "../models/productModel";
 
 export const getProducts = async (
   req: Request,
@@ -9,13 +8,9 @@ export const getProducts = async (
 ): Promise<void> => {
   try {
     const search = req.query.search?.toString();
-    const products = await prisma.products.findMany({
-      where: {
-        name: {
-          contains: search,
-        },
-      },
-    });
+    const products = await Product.find(
+      search ? { name: { $regex: search, $options: "i" } } : {}
+    );
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving products" });
@@ -28,15 +23,14 @@ export const createProduct = async (
 ): Promise<void> => {
   try {
     const { productId, name, price, rating, stockQuantity } = req.body;
-    const product = await prisma.products.create({
-      data: {
-        productId,
-        name,
-        price,
-        rating,
-        stockQuantity,
-      },
+    const product = new Product({
+      productId,
+      name,
+      price,
+      rating,
+      stockQuantity,
     });
+    await product.save();
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: "Error creating product" });
