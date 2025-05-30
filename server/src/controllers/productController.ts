@@ -11,7 +11,14 @@ export const getProducts = async (
     const products = await Product.find(
       search ? { name: { $regex: search, $options: "i" } } : {}
     );
-    res.json(products);
+    const productsMapped = products.map((product) => ({
+      productId: product.productId || product._id,
+      name: product.name,
+      price: product.price,
+      rating: product.rating,
+      stockQuantity: product.stockQuantity,
+    }));
+    res.json(productsMapped);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving products", error });
   }
@@ -22,7 +29,8 @@ export const createProduct = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { productId, name, price, rating, stockQuantity } = req.body;
+    let { productId, name, price, rating, stockQuantity } = req.body;
+    // If productId is not provided, use MongoDB _id after creation
     const product = new Product({
       productId,
       name,
@@ -31,7 +39,17 @@ export const createProduct = async (
       stockQuantity,
     });
     await product.save();
-    res.status(201).json(product);
+    if (!product.productId) {
+      product.productId = (product._id as string).toString();
+      await product.save();
+    }
+    res.status(201).json({
+      productId: product.productId,
+      name: product.name,
+      price: product.price,
+      rating: product.rating,
+      stockQuantity: product.stockQuantity,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error creating product", error });
   }

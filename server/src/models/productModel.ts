@@ -4,7 +4,7 @@ export interface IProduct extends Document {
   productId: string;
   name: string;
   price: number;
-  rating: number;
+  rating?: number;
   stockQuantity: number;
 }
 
@@ -12,7 +12,7 @@ const ProductSchema: Schema = new Schema({
   productId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  rating: { type: Number, required: true },
+  rating: { type: Number, required: false },
   stockQuantity: { type: Number, required: true },
 });
 

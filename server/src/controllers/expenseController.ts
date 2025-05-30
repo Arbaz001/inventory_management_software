@@ -10,8 +10,10 @@ export const getExpensesByCategory = async (
     const expenseByCategorySummaryRaw = await ExpenseByCategory.find().sort({ date: -1 });
     const expenseByCategorySummary = expenseByCategorySummaryRaw.map(
       (item: IExpenseByCategory) => ({
-        ...item.toObject(),
+        expenseByCategorySummaryId: item._id,
+        category: item.category,
         amount: item.amount.toString(),
+        date: item.date,
       })
     );
     res.json(expenseByCategorySummary);
