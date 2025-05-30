@@ -4,7 +4,7 @@ import Product from "../models/productModel";
 import SalesSummary from "../models/salesSummaryModel";
 import PurchaseSummary from "../models/purchaseSummaryModel";
 import ExpenseSummary from "../models/expenseSummaryModel";
-import ExpenseByCategory from "../models/expenseByCategoryModel";
+import ExpenseByCategory, { IExpenseByCategory } from "../models/expenseByCategoryModel";
 
 export const getDashboardMetrics = async (
   req: Request,
@@ -17,7 +17,7 @@ export const getDashboardMetrics = async (
     const expenseSummary = await ExpenseSummary.find().sort({ date: -1 }).limit(5);
     const expenseByCategorySummaryRaw = await ExpenseByCategory.find().sort({ date: -1 }).limit(5);
     const expenseByCategorySummary = expenseByCategorySummaryRaw.map(
-      (item: any) => ({
+      (item: IExpenseByCategory) => ({
         ...item.toObject(),
         amount: item.amount.toString(),
       })
@@ -30,6 +30,6 @@ export const getDashboardMetrics = async (
       expenseByCategorySummary,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving dashboard metrics" });
+    res.status(500).json({ message: "Error retrieving dashboard metrics", error });
   }
 };

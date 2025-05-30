@@ -1,6 +1,6 @@
 import "../db/mongoose";
 import { Request, Response } from "express";
-import ExpenseByCategory from "../models/expenseByCategoryModel";
+import ExpenseByCategory, { IExpenseByCategory } from "../models/expenseByCategoryModel";
 
 export const getExpensesByCategory = async (
   req: Request,
@@ -9,13 +9,13 @@ export const getExpensesByCategory = async (
   try {
     const expenseByCategorySummaryRaw = await ExpenseByCategory.find().sort({ date: -1 });
     const expenseByCategorySummary = expenseByCategorySummaryRaw.map(
-      (item: any) => ({
+      (item: IExpenseByCategory) => ({
         ...item.toObject(),
         amount: item.amount.toString(),
       })
     );
     res.json(expenseByCategorySummary);
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving expenses by category" });
+    res.status(500).json({ message: "Error retrieving expenses by category", error });
   }
 };

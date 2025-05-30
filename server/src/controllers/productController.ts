@@ -13,7 +13,7 @@ export const getProducts = async (
     );
     res.json(products);
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving products" });
+    res.status(500).json({ message: "Error retrieving products", error });
   }
 };
 
@@ -33,6 +33,6 @@ export const createProduct = async (
     await product.save();
     res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({ message: "Error creating product" });
+    res.status(500).json({ message: "Error creating product", error });
   }
 };
